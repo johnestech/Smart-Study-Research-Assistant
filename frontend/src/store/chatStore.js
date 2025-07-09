@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { chatAPI } from '../services/api';
 
 const useChatStore = create((set, get) => ({
   // State
@@ -89,6 +90,81 @@ const useChatStore = create((set, get) => ({
     messages: [],
     files: []
   }),
+
+  // Load chat by ID
+  loadChat: async (chatId) => {
+    set({ isLoading: true });
+    try {
+      const response = await chatAPI.getChat(chatId);
+      const chat = response.data;
+      set({ 
+        currentChat: chat,
+        messages: chat.messages || [],
+        files: chat.files || []
+      });
+    } catch (error) {
+      console.error('Error loading chat:', error);
+      set({ error: 'Failed to load chat' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  // Create new chat
+  createNewChat: async () => {
+    set({ isLoading: true });
+    try {
+      const response = await chatAPI.createChat({ title: 'New Chat' });
+      const newChat = response.data;
+      set({ 
+        currentChat: newChat,
+        messages: [],
+        files: []
+      });
+      get().addChat(newChat);
+    } catch (error) {
+      console.error('Error creating new chat:', error);
+      set({ error: 'Failed to create new chat' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  // Send message
+  sendMessage: async (content) => {
+    const { currentChat } = get();
+    if (!currentChat) {
+      throw new Error('No active chat');
+    }
+
+    set({ isSendingMessage: true });
+    
+    // Add user message immediately
+    const userMessage = {
+      id: Date.now(),
+      content,
+      role: 'user',
+      timestamp: new Date().toISOString()
+    };
+    get().addMessage(userMessage);
+
+    try {
+      const response = await chatAPI.sendMessage(currentChat.id, { content });
+      const aiMessage = response.data;
+      get().addMessage(aiMessage);
+      
+      // Update chat title if it's the first message
+      if (get().messages.length === 2) {
+        get().updateChatTitle(currentChat.id, content.substring(0, 50));
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      set({ error: 'Failed to send message' });
+      throw error;
+    } finally {
+      set({ isSendingMessage: false });
+    }
+  },
 
   // Reset store
   reset: () => set({

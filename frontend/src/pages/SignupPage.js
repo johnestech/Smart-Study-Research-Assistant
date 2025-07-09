@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { supabase } from '../utils/supabase';
+import { authAPI } from '../services/api';
 import useAuthStore from '../store/authStore';
 
 const SignupPage = () => {
@@ -13,7 +13,7 @@ const SignupPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { setAuth } = useAuthStore();
+  const { login } = useAuthStore();
 
   const handleChange = (e) => {
     setFormData({
@@ -38,30 +38,24 @@ const SignupPage = () => {
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const response = await authAPI.signup({
         email: formData.email,
         password: formData.password,
-        options: {
-          data: {
-            full_name: formData.fullName
-          }
-        }
+        fullName: formData.fullName
       });
 
-      if (error) {
-        toast.error(error.message);
-      } else {
-        if (data.user && !data.user.email_confirmed_at) {
-          toast.success('Check your email to confirm your account');
-        } else {
-          setAuth(data.user, data.session);
-          toast.success('Account created successfully!');
-          navigate('/chat');
-        }
-      }
+      const { user, access_token } = response.data;
+      
+      // Store in state
+      login(user, access_token);
+      
+      toast.success('Account created successfully!');
+      navigate('/chat');
+      
     } catch (error) {
       console.error('Error signing up:', error);
-      toast.error('An error occurred. Please try again.');
+      const errorMessage = error.response?.data?.error || 'An error occurred. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

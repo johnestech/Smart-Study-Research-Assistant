@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { supabase } from '../utils/supabase';
+import { authAPI } from '../services/api';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -19,19 +19,13 @@ const ForgotPasswordPage = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) {
-        toast.error(error.message);
-      } else {
-        setIsSubmitted(true);
-        toast.success('Password reset email sent! Check your inbox.');
-      }
+      await authAPI.forgotPassword({ email });
+      setIsSubmitted(true);
+      toast.success('Password reset email sent! Check your inbox.');
     } catch (error) {
       console.error('Error sending reset email:', error);
-      toast.error('An error occurred. Please try again.');
+      const errorMessage = error.response?.data?.error || 'An error occurred. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
