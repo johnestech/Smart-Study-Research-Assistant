@@ -5,7 +5,7 @@ load_dotenv()
 
 class Config:
     # Flask settings
-    SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-here')
+    SECRET_KEY = os.getenv('FLASK_SECRET_KEY', '764ce6816730602889a0b3b6490b9678')
     DEBUG = os.getenv('FLASK_ENV') == 'development'
     
     # Supabase settings
