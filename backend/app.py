@@ -18,7 +18,7 @@ def create_app(config_name=None):
     config[config_name].init_app(app)
     
     # Initialize extensions
-    CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+    CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"], supports_credentials=True)
     
     # JWT Manager
     jwt = JWTManager(app)
@@ -85,15 +85,15 @@ def create_app(config_name=None):
     def internal_server_error(error):
         return jsonify({'error': 'Internal server error'}), 500
     
-    # Handle CORS preflight requests
-    @app.before_request
-    def handle_preflight():
-        if request.method == "OPTIONS":
-            response = jsonify({'status': 'OK'})
-            response.headers.add("Access-Control-Allow-Origin", "*")
-            response.headers.add('Access-Control-Allow-Headers', "*")
-            response.headers.add('Access-Control-Allow-Methods', "*")
-            return response
+    # # Handle CORS preflight requests
+    # @app.before_request
+    # def handle_preflight():
+    #     if request.method == "OPTIONS":
+    #         response = jsonify({'status': 'OK'})
+    #         response.headers.add("Access-Control-Allow-Origin", "*")
+    #         response.headers.add('Access-Control-Allow-Headers', "*")
+    #         response.headers.add('Access-Control-Allow-Methods', "*")
+    #         return response
     
     # Request logging middleware
     @app.before_request
@@ -103,13 +103,13 @@ def create_app(config_name=None):
             if request.get_json():
                 print(f"Request Data: {request.get_json()}")
     
-    # Response headers
-    @app.after_request
-    def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
+    # # Response headers
+    # @app.after_request
+    # def after_request(response):
+    #     response.headers.add('Access-Control-Allow-Origin', '*')
+    #     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    #     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    #     return response
     
     return app
 
