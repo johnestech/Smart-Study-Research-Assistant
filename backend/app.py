@@ -18,7 +18,11 @@ def create_app(config_name=None):
     config[config_name].init_app(app)
     
     # Initialize extensions
-    CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"], supports_credentials=True)
+    CORS(app, 
+         origins=["http://localhost:3000", "http://127.0.0.1:3000"], 
+         supports_credentials=True,
+         allow_headers=["Content-Type", "Authorization"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
     
     # JWT Manager
     jwt = JWTManager(app)
@@ -35,6 +39,19 @@ def create_app(config_name=None):
     @jwt.unauthorized_loader
     def missing_token_callback(error):
         return jsonify({'error': 'Authentication token is required'}), 401
+    
+    # Handle CORS preflight requests BEFORE other middleware
+    @app.before_request
+    def handle_preflight():
+        if request.method == "OPTIONS":
+            response = jsonify({'status': 'OK'})
+            origin = request.headers.get('Origin')
+            if origin in ["http://localhost:3000", "http://127.0.0.1:3000"]:
+                response.headers.add('Access-Control-Allow-Origin', origin)
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
     
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
@@ -84,16 +101,6 @@ def create_app(config_name=None):
     @app.errorhandler(500)
     def internal_server_error(error):
         return jsonify({'error': 'Internal server error'}), 500
-    
-    # # Handle CORS preflight requests
-    # @app.before_request
-    # def handle_preflight():
-    #     if request.method == "OPTIONS":
-    #         response = jsonify({'status': 'OK'})
-    #         response.headers.add("Access-Control-Allow-Origin", "*")
-    #         response.headers.add('Access-Control-Allow-Headers', "*")
-    #         response.headers.add('Access-Control-Allow-Methods', "*")
-    #         return response
     
     # Request logging middleware
     @app.before_request
