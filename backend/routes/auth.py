@@ -39,7 +39,7 @@ def validate_username(username):
     
     return True, "Username is valid"
 
-@auth_bp.route('/signup', methods=['POST'])
+@auth_bp.route('/signup', methods=['POST', 'OPTIONS'])
 def signup():
     """User registration endpoint"""
     try:
@@ -115,9 +115,12 @@ def signup():
             return jsonify({'error': result['error']}), 500
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        print('Signup Exception:', e)
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'details': traceback.format_exc()}), 500
 
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.route('/login', methods=['POST', 'OPTIONS'])
 def login():
     """User login endpoint"""
     try:
@@ -168,9 +171,12 @@ def login():
         }), 200
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        print('Login Exception:', e)
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'details': traceback.format_exc()}), 500
 
-@auth_bp.route('/profile', methods=['GET'])
+@auth_bp.route('/profile', methods=['GET', 'OPTIONS'])
 @jwt_required()
 def get_profile():
     """Get user profile"""
@@ -196,9 +202,12 @@ def get_profile():
         }), 200
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        print('Get Profile Exception:', e)
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'details': traceback.format_exc()}), 500
 
-@auth_bp.route('/change-password', methods=['POST'])
+@auth_bp.route('/change-password', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def change_password():
     """Change user password"""
@@ -236,9 +245,12 @@ def change_password():
             return jsonify({'error': result['error']}), 500
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        print('Change Password Exception:', e)
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'details': traceback.format_exc()}), 500
 
-@auth_bp.route('/forgot-password', methods=['POST'])
+@auth_bp.route('/forgot-password', methods=['POST', 'OPTIONS'])
 def forgot_password():
     """Request password reset"""
     try:
@@ -270,9 +282,12 @@ def forgot_password():
             return jsonify({'error': 'Failed to generate reset token'}), 500
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        print('Forgot Password Exception:', e)
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'details': traceback.format_exc()}), 500
 
-@auth_bp.route('/reset-password', methods=['POST'])
+@auth_bp.route('/reset-password', methods=['POST', 'OPTIONS'])
 def reset_password():
     """Reset password with token"""
     try:
@@ -310,9 +325,12 @@ def reset_password():
         return jsonify({'message': 'Password reset successfully'}), 200
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        print('Reset Password Exception:', e)
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'details': traceback.format_exc()}), 500
 
-@auth_bp.route('/delete-account', methods=['DELETE'])
+@auth_bp.route('/delete-account', methods=['DELETE', 'OPTIONS'])
 @jwt_required()
 def delete_account():
     """Delete user account"""
@@ -344,4 +362,7 @@ def delete_account():
             return jsonify({'error': result['error']}), 500
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        print('Delete Account Exception:', e)
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'details': traceback.format_exc()}), 500
