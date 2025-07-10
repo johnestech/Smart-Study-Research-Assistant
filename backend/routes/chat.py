@@ -7,7 +7,7 @@ import os
 
 chat_bp = Blueprint('chat', __name__)
 
-@chat_bp.route('/chats', methods=['GET'])
+@chat_bp.route('/chats', methods=['GET', 'OPTIONS'])
 @jwt_required()
 def get_user_chats():
     """Get all chats for the current user"""
@@ -23,7 +23,7 @@ def get_user_chats():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@chat_bp.route('/chats', methods=['POST'])
+@chat_bp.route('/chats', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def create_chat():
     """Create a new chat"""
@@ -45,7 +45,7 @@ def create_chat():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@chat_bp.route('/chats/<chat_id>', methods=['GET'])
+@chat_bp.route('/chats/<chat_id>', methods=['GET', 'OPTIONS'])
 @jwt_required()
 def get_chat():
     """Get a specific chat with its messages"""
@@ -76,7 +76,7 @@ def get_chat():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@chat_bp.route('/chats/<chat_id>', methods=['PUT'])
+@chat_bp.route('/chats/<chat_id>', methods=['PUT', 'OPTIONS'])
 @jwt_required()
 def update_chat():
     """Update chat title"""
@@ -101,7 +101,7 @@ def update_chat():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@chat_bp.route('/chats/<chat_id>', methods=['DELETE'])
+@chat_bp.route('/chats/<chat_id>', methods=['DELETE', 'OPTIONS'])
 @jwt_required()
 def delete_chat():
     """Delete a chat"""
@@ -118,7 +118,7 @@ def delete_chat():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@chat_bp.route('/chats/<chat_id>/messages', methods=['POST'])
+@chat_bp.route('/chats/<chat_id>/messages', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def send_message():
     """Send a message and get AI response"""
@@ -196,7 +196,7 @@ def send_message():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@chat_bp.route('/chats/<chat_id>/files', methods=['POST'])
+@chat_bp.route('/chats/<chat_id>/files', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def upload_file():
     """Upload a file to a chat"""
@@ -270,7 +270,7 @@ def upload_file():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@chat_bp.route('/chats/<chat_id>/files', methods=['GET'])
+@chat_bp.route('/chats/<chat_id>/files', methods=['GET', 'OPTIONS'])
 @jwt_required()
 def get_chat_files():
     """Get all files for a chat"""
@@ -292,7 +292,7 @@ def get_chat_files():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@chat_bp.route('/files/<file_id>', methods=['DELETE'])
+@chat_bp.route('/files/<file_id>', methods=['DELETE', 'OPTIONS'])
 @jwt_required()
 def delete_file():
     """Delete a file"""
