@@ -1,5 +1,5 @@
 -- Enable Row Level Security
-ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret-here';
+ALTER DATABASE postgres SET "app.jwt_secret" TO 'gJpJbhjAunaeCxDBJVW3H16swVKuM6cGct63dohI0QR24eFTl1xsnjDHsDuoMuYXXT1Er6NLIS/3iXvCQGmJeA==';
 
 -- Create users table
 CREATE TABLE IF NOT EXISTS public.users (
