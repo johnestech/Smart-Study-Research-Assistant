@@ -58,8 +58,26 @@ const SignupPage = () => {
     }
 
     // Validate password
-    if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters long');
+    if (formData.password.length < 8) {
+      toast.error('Password must be at least 8 characters long');
+      return;
+    }
+
+    // Check for uppercase letter
+    if (!/[A-Z]/.test(formData.password)) {
+      toast.error('Password must contain at least one uppercase letter');
+      return;
+    }
+
+    // Check for lowercase letter
+    if (!/[a-z]/.test(formData.password)) {
+      toast.error('Password must contain at least one lowercase letter');
+      return;
+    }
+
+    // Check for number
+    if (!/[0-9]/.test(formData.password)) {
+      toast.error('Password must contain at least one number');
       return;
     }
 
@@ -107,10 +125,10 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -231,6 +249,9 @@ const SignupPage = () => {
                 onChange={handleChange}
                 disabled={isLoading}
               />
+              <p className="mt-1 text-sm text-gray-500">
+                Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.
+              </p>
             </div>
             
             <div>
