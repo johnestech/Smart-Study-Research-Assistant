@@ -6,10 +6,13 @@ import useAuthStore from '../store/authStore';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
+    firstName: '',
+    lastName: '',
+    otherName: '',
     password: '',
-    confirmPassword: '',
-    fullName: ''
+    confirmPassword: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -25,13 +28,44 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+    // Validate username
+    if (!formData.username.trim()) {
+      toast.error('Username is required');
       return;
     }
 
+    if (formData.username.length < 3) {
+      toast.error('Username must be at least 3 characters long');
+      return;
+    }
+
+    // Validate first name
+    if (!formData.firstName.trim()) {
+      toast.error('First name is required');
+      return;
+    }
+
+    // Validate last name
+    if (!formData.lastName.trim()) {
+      toast.error('Last name is required');
+      return;
+    }
+
+    // Validate email
+    if (!formData.email.trim()) {
+      toast.error('Email is required');
+      return;
+    }
+
+    // Validate password
     if (formData.password.length < 6) {
       toast.error('Password must be at least 6 characters long');
+      return;
+    }
+
+    // Validate password confirmation
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('Passwords do not match');
       return;
     }
 
@@ -39,9 +73,13 @@ const SignupPage = () => {
     
     try {
       const response = await authAPI.signup({
+        username: formData.username,
         email: formData.email,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        other_name: formData.otherName || '',
         password: formData.password,
-        fullName: formData.fullName
+        confirm_password: formData.confirmPassword
       });
 
       const { user, access_token } = response.data;
@@ -54,8 +92,15 @@ const SignupPage = () => {
       
     } catch (error) {
       console.error('Error signing up:', error);
-      const errorMessage = error.response?.data?.error || 'An error occurred. Please try again.';
-      toast.error(errorMessage);
+      
+      // Handle specific error cases
+      if (error.response?.status === 409) {
+        const errorMessage = error.response?.data?.error || 'Username or email already exists';
+        toast.error(errorMessage);
+      } else {
+        const errorMessage = error.response?.data?.error || 'An error occurred. Please try again.';
+        toast.error(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -82,18 +127,71 @@ const SignupPage = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
-                Full Name
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Username
               </label>
               <input
-                id="fullName"
-                name="fullName"
+                id="username"
+                name="username"
                 type="text"
-                autoComplete="name"
+                autoComplete="username"
                 required
                 className="input-field"
-                placeholder="Enter your full name"
-                value={formData.fullName}
+                placeholder="Enter your username"
+                value={formData.username}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                First Name
+              </label>
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                autoComplete="given-name"
+                required
+                className="input-field"
+                placeholder="Enter your first name"
+                value={formData.firstName}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                Last Name
+              </label>
+              <input
+                id="lastName"
+                name="lastName"
+                type="text"
+                autoComplete="family-name"
+                required
+                className="input-field"
+                placeholder="Enter your last name"
+                value={formData.lastName}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="otherName" className="block text-sm font-medium text-gray-700">
+                Other Name (Optional)
+              </label>
+              <input
+                id="otherName"
+                name="otherName"
+                type="text"
+                autoComplete="additional-name"
+                className="input-field"
+                placeholder="Enter your other name (optional)"
+                value={formData.otherName}
                 onChange={handleChange}
                 disabled={isLoading}
               />
