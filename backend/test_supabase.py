@@ -5,13 +5,11 @@ def test_connection():
     # result = supabase_service.get_user_by_username('testuser')
     # print("Result:", result)
 
-    # Try to get a user by email (replace with an actual email in your DB)
     print("Testing get_user_by_email...")
     result = supabase_service.get_user_by_email('ebugajohn5646@gmail.com')
     print("Result:", result)
 
-    # Try to create a user (change values as needed)
-    print("Testing create_user...")
+    print("creating user...")
     result = supabase_service.create_user(
         username='testuser',
         email='test@example.com',
